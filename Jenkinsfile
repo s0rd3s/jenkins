@@ -73,7 +73,7 @@ pipeline {
                 // Использование SSH-ключа напрямую
                 sh '''
                     ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $TARGET_USER@$TARGET_SERVER_IP '
-                        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD &&
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin &&
                         docker pull $DOCKER_REGISTRY/nginx:$DATE_TAG &&
                         docker pull $DOCKER_REGISTRY/apache:$DATE_TAG &&
                         docker stop nginx || true &&

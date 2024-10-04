@@ -13,7 +13,7 @@ pipeline {
                 // Использование GitHub Personal Access Token для клонирования репозитория
                 withCredentials([string(credentialsId: 'dfac13a1-247a-466d-af2b-96d13131e874', variable: 'GITHUB_TOKEN')]) {
                     sh '''
-                        git clone https://$GITHUB_TOKEN@$GITHUB_REPO
+                        git clone -b task13-ec2 https://$GITHUB_TOKEN@$GITHUB_REPO
                     '''
                 }
             }

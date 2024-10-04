@@ -8,25 +8,37 @@ pipeline {
         TARGET_USER = 'ec2-user'  // Имя пользователя на целевом сервере
     }
     stages {
-        stage('Clone repository') {
+        stage('Clone or Pull repository') {
             steps {
-                // Использование GitHub Personal Access Token для клонирования репозитория
-                withCredentials([string(credentialsId: 'dfac13a1-247a-466d-af2b-96d13131e874', variable: 'GITHUB_TOKEN')]) {
-                    sh '''
-                        git clone -b task13-ec2 https://$GITHUB_TOKEN@$GITHUB_REPO
-                    '''
+                script {
+                    // Использование GitHub Personal Access Token для клонирования репозитория
+                    withCredentials([string(credentialsId: 'dfac13a1-247a-466d-af2b-96d13131e874', variable: 'GITHUB_TOKEN')]) {
+                        if (fileExists('PlaysDev_DevOps_Trainee')) {
+                            // Если директория существует, выполняем git pull
+                            dir('PlaysDev_DevOps_Trainee') {
+                                sh '''
+                                    git pull origin task13-ec2
+                                '''
+                            }
+                        } else {
+                            // Если директория не существует, выполняем git clone
+                            sh '''
+                                git clone -b task13-ec2 https://$GITHUB_TOKEN@$GITHUB_REPO
+                            '''
+                        }
+                    }
                 }
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                dir('nginx') {
+                dir('PlaysDev_DevOps_Trainee/nginx') {
                     sh '''
                         docker build -t $DOCKER_REGISTRY/nginx:$DATE_TAG .
                     '''
                 }
-                dir('apache') {
+                dir('PlaysDev_DevOps_Trainee/apache') {
                     sh '''
                         docker build -t $DOCKER_REGISTRY/apache:$DATE_TAG .
                     '''
